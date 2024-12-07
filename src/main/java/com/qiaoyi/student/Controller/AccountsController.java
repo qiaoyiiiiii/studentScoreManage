@@ -1,12 +1,16 @@
 package com.qiaoyi.student.Controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.qiaoyi.student.Entity.Menu;
+import com.qiaoyi.student.Service.MenuService;
 import io.micrometer.common.util.StringUtils;
 import com.qiaoyi.student.Service.AccountsService;
 import com.qiaoyi.student.Utils.Result;
 import jakarta.annotation.Resource;
 import com.qiaoyi.student.Entity.Accounts;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.HashMap;
 
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -17,6 +21,8 @@ import java.util.regex.Pattern;
 public class AccountsController {
     @Resource
     private AccountsService accountsService;
+    @Resource
+    private MenuService menuService;
 
     @DeleteMapping("/delete")
     public Result delete(@RequestBody String userId) {
@@ -35,8 +41,8 @@ public class AccountsController {
             queryWrapper.eq(Accounts::getPassword, password);
         }
         if(accountsService.getOne(queryWrapper)!=null){
-            Accounts user= userService.getOne(queryWrapper);
-            List<Menu> list = menuService.lambdaQuery().like(Menu::getMenuRight, user1.getRoleId()).list();
+            Accounts user= accountsService.getOne(queryWrapper);
+            List<Menu> list = menuService.lambdaQuery().like(Menu::getMenuRight, user.getRole()).list();
             HashMap res=new HashMap();
             res.put("user",user);
             res.put("list",list);
